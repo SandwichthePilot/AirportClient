@@ -22,12 +22,9 @@ For VSC:
    1) AC1089
    2) landing
    3) 18L
-   4) B787
-   5) 1
-   6) Passenger
-   7) IRFD
-   8) ITKO, IRFD
-   9) Yes
+   4) 1
+   5) IRFD
+   6) Yes
 
 Any issues?
 discord [sandwichthepilot]
