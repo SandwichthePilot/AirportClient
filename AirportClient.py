@@ -11,11 +11,51 @@ def text_to_speech(text):
         engine = pyttsx3.init()
 
         # Set properties (optional)
-        engine.setProperty("rate", 200)  # Speed of speech (words per minute)
+        engine.setProperty("rate", 194)  # Speed of speech (words per minute)
         engine.setProperty("volume", 0.9)  # Volume level (0.0 to 1.0)
 
+        """
+        text = text.upper()
+        strText = ""
+        i = 0
+        # Runway 180L -> Runway 1 8 0 Left
+        # maintain 1000 -> maintain 1 000
+        
+        while i < len(text) - 1:
+            if text[i].isdigit() and text[i+1] == "L":
+                strText = strText + text[i] + " Left"
+                i = i + 2
+            elif text[i].isdigit() and text[i+1] == "R":
+                strText = strText + text[i] + " Right"
+                i = i + 2
+            elif text[i].isdigit() and text[i+1].isdigit():
+                if i < len(text) - 3:
+                    if text[i] == "0" and text[i+1] == "0" and text[i + 2] == "0":
+                        strText = strText + "thousand "
+                        i = i + 3
+                    elif text[i] == "0" and text[i+1] == "0":
+                        strText = strText + "hundred "
+                        i = i + 2
+                    else:
+                        strText = strText + text[i] + " "
+                        i = i + 1
+                elif i < len(text) - 2:
+                    if text[i] == "0" and text[i+1] == "0":
+                        strText = strText + "hundred "
+                        i = i + 2
+                    else:
+                        strText = strText + text[i]
+                        i = i + 1
+                else:
+                    strText = strText + text[i] + " "
+                    i = i + 1
+            else:
+                strText = strText + text[i]
+                i = i + 1
+        """
+        strText = text
         # Convert the text to speech
-        engine.say(text)
+        engine.say(strText)
 
         # Wait for the speech to finish
         engine.runAndWait()
@@ -26,8 +66,8 @@ def text_to_speech(text):
         print(f"Exception in text_to_speech: {e}")
         return False
 
-text_to_speech("AirportClient, version 1 dot 9 dot 6 loaded")
-print("Thank you for using AirportClient, version 1.9.6 loaded")
+text_to_speech("AirportClient, version 1 point 0 dot 3 loaded")
+print("Thank you for using AirportClient, version 1.0.3 loaded")
 
 def get_callsign():
     while True:
@@ -110,16 +150,10 @@ position = get_position()
 #landing/takeoff
 runway = get_runway()
 # runway 18L
-aircraft = get_aircraft()
-# (almost anything) ex: B787
 gate = get_gate()
 # (almost anything) ex: 1
-type = get_type()
-# Cargo/Passenger/Recreation/Undefined
 location = get_location()
 # (almost anything) ex: IRFD
-flight = get_flight()
-# (almost anything) ex: ITKO,IRFD
 confirm = get_confirmation()
 # Yes or no
 
@@ -127,241 +161,171 @@ def process_input(user_input, callsign):
     # Check if the callsign is present in the user input
     if callsign.lower() in user_input.lower():
         if "taxi" in user_input.lower():
-            taxi
+            taxi(user_input, callsign)
+            return ""
         elif "takeoff" in user_input.lower():
-            takeoff
+            takeoff(callsign)
+            return ""
         elif "landing" in user_input.lower():
-            landing
-        elif "ils" in user_input.lower():
-            return f"ATC: {callsign}, is clear to ils runway {runway} direct {waypoint}"
+            landing(callsign)
+            return ""
         elif "pushback" in user_input.lower() and "start" in user_input.lower():
-            pushback        
+            pushback(user_input, callsign)
+            return ""
+        elif "go around" in user_input.lower() or "going around" in user_input.lower():
+            around(user_input, callsign) 
+            return ""  
         else:
             return f"ATC: {callsign}, I didn't understand your request. Please provide more details."
     else:
         return f"ATC: Unable to recognize callsign {callsign}. Please provide more details."
-    
-def area():
-    # Rockford
-    if location == "IRFD" or "RFD":
-        set; location("ChicagoRock")
-    if location == "IMLR" or "MEL":
-        set; location("ChicagoMel")
-    if location == "IGAR" or "ABG":
-        set; location("ChicagoAFB")
-    if location == "ITRC" or "TRN":
-        set; location("ChicagoTrain")
-    if location == "IBLT" or "BOL":
-        set; location("ChicagoBolt")
-    # Tokyo
-    if location == "ITKO" or "HND":
-        set; location("TokyoInt")
-    if location == "IDCS" or "SAB":
-        set; location("TokyoOut")
-    # Izolirani
-    if location == "ISCM" or "SCT":
-        set; location("NorsomAFB")
-    if location == "IZOL" or "IZO":
-        set; location("NorsomInt")
-    if location == "IJAF" or "NJF":
-        set; location("NorsomAl")
-    # Grindavik
-    if location == "IGRV" or "GVK":
-        set; location("Keflavik")
-    # Cyprus
-    if location == "ILAR" or "LCA":
-        set; location("LazarusLar")
-    if location == "IBAR" or "BRR":
-        set; location("LazarusBeach")
-    if location == "IHEN" or "HEN":
-        set; location("LazarusHen")
-    if location == "IPAP" or "PFO":
-        set; location("LazarusPap")
-    # Skopelos
-    if location == "ISKP" or "SKO":
-        set; location("Skopelos")
-    # Perth
-    if location == "ILKL" or "LUA":
-        set; location("PerthMount")
-    if location == "IPPH" or "PER":
-        set; location("PerthInt")
-    # Saint Barthelemy
-    if location == "IBTH" or "SBH":
-        set; location("Sotaf")
-    if location == "IUFO" or "UFO":
-        set; location("UFO")
-    # Sauthemptona
-    if location == "ISAU" or "SAU":
-        set; location("Brighton")
-    # Carrier
-    if location == "HMSQE" or "IDK":
-        set; location("CarrierQueen")
-    if location == "USSGRF" or "IDK":
-        set; location("CarrierGRF")
 
-def get_island():
-    if location == "ChicagoRock" or "ChicagoMel" or "ChicagoAFB" or "ChicagoTrain" or "ChicagoBolt":
-        set; island("Chicago")    
-    if location == "TokyoInt" or "TokyoOut":
-        set; island("Tokyo")
-    if location == "NorsomAFB" or "NorsomInt" or "NorsomAl":
-        set; island("Norsom")
-    if location == "Keflavik":
-        set; island("Keflavik")
-    if location == "lazaruslar" or "LazarusBeach" or "LazarusHen" or "LazarusPap":
-        set; island("Lazarus")
-    if location == "Skopelos":
-        set; island("Skopelos")
-    if location == "PerthMount" or "PerthInt":
-        set; island("Perth")
-    if location == "Sotaf" or "UFO":
-        set; island("Sotaf")
-    if location == "Brighton":
-        set; island("Brighton")
+def around(callsign):
+    if runway == "36l" and location == "IRFD" or location == "RFD":
+        text_to_speech(f"{callsign}, go around received, climb and maintain 1 000, turn left heading 1 8 0, on downwind contact tower")
+        print(f"{callsign}, go around received, climb and maintain 1000, turn left heading 180, on downwind contact tower")
+    if runway == "36r" and location == "IRFD" or location == "RFD":
+        text_to_speech(f"{callsign}, go around received, climb and maintain 1 000, turn right heading 1 8 0, on downwind contact tower")
+        print(f"{callsign}, go around received, climb and maintain 1000, turn right heading 180, on downwind contact tower")
+    if runway == "18l" and location == "IRFD":
+        text_to_speech(f"{callsign}, go around received, climb and maintain 1 000, turn left heading 3 6 0, on downwind contact tower")
+        print(f"{callsign}, go around received, climb and maintain 1000, turn left heading 360, on downwind contact tower")
+    if runway == "18r" and location == "IRFD" or location == "RFD":
+        text_to_speech(f"{callsign}, go around received, climb and maintain 1 000, turn right heading 3 6 0, on downwind contact tower")
+        print(f"{callsign}, go around received, climb and maintain 1000, turn right heading 360, on downwind contact tower")
+    if runway == "29" and location == "ChicagoMel":
+        text_to_speech(f"{callsign}, go around received, climb and maintain 1 000, turn right heading 1 1 0, on downwind contact tower")
+        print(f"{callsign}, go around received, climb and maintain 1000, turn right heading 110, on downwind contact tower")
+    if runway == "11" and location == "ChicagoMel":
+        text_to_speech(f"{callsign}, go around received, climb and maintain 1 000, turn left heading 2 9 0, on downwind contact tower")
+        print(f"{callsign}, go around received, climb and maintain 1000, turn left heading 290, on downwind contact tower")
 
-def airport():
-    if location == "ChicagoRock":
-        set_airport = "Greater Rockford"
-        set_availible_airport = "Mellor"
-        set_island = "Chicago"
-    if location == "ChicagoMel":
-        set_airport = "Mellor"
-        set_availible_airport = "Greater Rockford"
-        set_island = "Chicago"
-    if location == "ChicagoAFB":
-        set_airport = "Air Base Gary"
-        set_availible_airport = "N/A"
-        set_island = "Chicago"
-    if location == "ChicagoTrain":
-        set_airport = "Training Centre"
-        set_availible_airport = "Mellor"
-        set_island = "Chicago"
-    if location == "ChicagoBolt":
-        set_airport = "Boltic Airfield"
-        set_availible_airport = "Mellor" or "Greater Rockford"
-        set_island = "Chicago"
-    if location == "TokyoInt":
-        set_airport = "Tokyo International"
-        set_availible_airport = "Saba"
-        set_island = "Tokyo"    
-    if location == "TokyoOut":
-        set_airport = "Saba"
-        set_availible_airport = "Tokyo International"
-        set_island = "Tokyo"
-    if location == "NorsomAFB":
-        set_airport = "RAF Scampton"
-        set_availible_airport = "N/A"
-        set_island = "Norsom"
-    if location == "NorsomInt":
-        set_airport = "Izolirani"
-        set_availible_airport = "Al Najaf"
-        set_island = "Norsom"
-    if location == "NorsomAl":
-        set_airport = "Al Najaf"
-        set_availible_airport = "Izolirani"
-        set_island = "Norsom"
-    if location == "Keflavik":
-        set_airport = "Grindavik"
-        set_availible_airport = "N/A"
-        set_island = "Keflavik"
-    if location == "LazarusLar":
-        set_airport = "Larnaca International"
-        set_availible_airport = "Paphos"
-        set_island = "Lazarus"
-    if location == "LazarusBeach":
-        set_airport = "Barra"
-        set_availible_airport = "Henstridge"
-        set_island = "Lazarus"
-    if location == "LazarusHen":
-        set_airport = "Henstridge"
-        set_availible_airport = "Paphos" or "Larnaca"
-        set_island = "Lazarus"
-    if location == "LazarusPap":
-        set_airport = "Paphos"
-        set_availible_airport = "Larnaca"
-        set_island = "Lazarus"
-    if location == "Skopelos":
-        set_airport = "Skopelos"
-        set_availible_airport = "N/A"
-        set_island = "Skopelos"
-    if location == "PerthMount":
-        set_airport = "Lukla"
-        set_availible_airport = "Perth International"
-        set_island = "Perth"
-    if location == "PerthInt":
-        set_airport = "Perth International"
-        set_availible_airport = "N/A"
-        set_island = "Perth"
-    if location == "Sotaf":
-        set_airport = "Saint Barthelemy"
-        set_availible_airport = "N/A"
-        set_island = "Sotaf"
-    if location == "UFO":
-        set_airport = "UFO Airbase"
-        set_availible_airport = "Saint Barthelemy"
-        set_island = "Sotaf"
-    if location == "Brighton":
-        set_airport = "Sauthemptona"
-        set_availible_airport = "N/A"
-        set_island = "Brighton"
-    if location == "CarrierQueen":
-        set_airport = "HMS Queen Elizabeth"
-        set_availible_airport = "N/A"
-        set_island = "N/A"
-    if location == "CarrierGRF":
-        set_airport = "USS Gerald R. Ford"
-        set_availible_airport = "N/A"
-        set_island = "N/A"
-    
-def vor():
-    if island == "Chicago":
-        set_availible_vor = "TRAINING CENTRE","ROCKFORD","MELLOR","PEARSON"
+def takeoff(callsign):
+    if runway == "36l" and location == "IRFD" or location == "RFD" and position == "takeoff": 
+        text_to_speech(f"{callsign}, clear for takeoff 3 6 Left, winds calm, climb and maintain FLight level 0 3, 0 4 minutes after departure, direct EASTN")
+        print(f"{callsign}, clear for takeoff 36L, winds calm, climb and maintain FL03 04 minutes after departure, direct EASTN.")
+        text_to_speech(f"{callsign}, contact tower on 1 1 8 point 1 double o for rockford tower")
+        print(f"{callsign}, contact tower on 118.100 for Rockford Tower")
+    if runway == "36R" and location == "IRFD" or location == "RFD" and position == "takeoff": 
+        text_to_speech(f"{callsign}, clear for takeoff 3 6 Right, winds calm, climb and maintain FLight level 0 3, 0 4 minutes after departure, direct EASTN")
+        print(f"{callsign}, clear for takeoff 36R, winds calm, climb and maintain FL03 04 minutes after departure, direct EASTN.")
+        text_to_speech(f"{callsign}, contact tower on 1 1 8 point 1 double o for rockford tower")
+        print(f"{callsign}, contact tower on 118.100 for Rockford Tower")
+    if runway == "18L" and location == "IRFD" or location == "RFD" and position == "takeoff": 
+        text_to_speech(f"{callsign}, clear for takeoff 1 8 Left, winds calm, climb and maintain FLight level 0 3, 0 4 minutes after departure, direct INTER")
+        print(f"{callsign}, clear for takeoff 18L, winds calm, climb and maintain FL03 04 minutes after departure, direct INTER.")
+        text_to_speech(f"{callsign}, contact tower on 1 1 8 point 1 double o for rockford tower")
+        print(f"{callsign}, contact tower on 118.100 for Rockford Tower")
+    if runway == "18L" and location == "IRFD" or location == "RFD" and position == "takeoff": 
+        text_to_speech(f"{callsign}, clear for takeoff 1 8 Right, winds calm, climb and maintain FLight level 0 3, 0 4 minutes after departure, direct INTER")
+        print(f"{callsign}, clear for takeoff 18R, winds calm, climb and maintain FL03 04 minutes after departure, direct INTER.")
+        text_to_speech(f"{callsign}, contact tower on 1 1 8 point 1 double o for rockford tower")
+        print(f"{callsign}, contact tower on 118.100 for Rockford Tower")
 
-def vortac():
-    if location == "IRFD" or "IGAR" or "IMLR" or "ITRC" or "IBLT" or "ICRG" or "Chicago":
-        set_availible_vortac = "KENNEDY","ROCKET","BLADES","LOGAN", 
+def landing(callsign):
+    if runway == "36l" and location == "IRFD" or location == "RFD" and position == "landing":
+        text_to_speech(f"{callsign}, clear for landing 36L, winds calm, i l s is; {callsign} is clear to i l s via VOR TAC Blades, at NEN SI do 700, continue to K R-6 4 4, approach runway 36L")
+        print(f"{callsign}, clear for landing {runway}, winds calm, ils is; {callsign} is clear to ils via VORTAC Blades, at NENSI do 700, continue to KR-644, approach runway {runway}")
+    if runway == "36r" and location == "IRFD" or location == "RFD" and position == "landing":
+        text_to_speech(f"{callsign}, clear for landing 3 6 right, winds calm, i l s is; {callsign} is clear to i l s via VOR TAC Blades, at Alexi do 1 000, to Lim fo, do 8 00, to K R 6 5 4 do 5 00, and approach 3 6 Right")
+        print(f"{callsign}, clear for landing {runway}, winds calm, ils is; {callsign} is clear to ils via VORTAC Blades, at Alexi do 1000, to Limfo do 800, to KR-654 do 500, and approach {runway}")
+    if runway == "18l" and location == "IRFD" or location == "RFD" and position == "landing":
+        text_to_speech(f"{callsign}, clear for landing 1 8 left, winds calm, i l s is; {callsign}, is clear to i l s via, Pliny do 1 000, to Fland do 5 00, to K R 1 3 5 do 2 00, approach runway 1 8 left")
+        print(f"{callsign}, clear for landing {runway}, winds calm, ils is; {callsign}, is clear to ils via Pliny do 1000, to Fland do 500, to KR-135 do 200, approach runway {runway}")
+    if runway == "18r" and location == "IRFD" or location == "RFD" and position == "landing":
+        text_to_speech(f"{callsign}, clear for landing 1 8 right, winds calm, i l s is; {callsign}, is clear to i l s via, VORTAC Kennedy, to Warrs do 5 00, to K R 4 8 2 do 2 00, approach runway 1 8 right")
+        print(f"{callsign}, clear for landing {runway}, winds calm, ils is; {callsign}, is clear to ils via VORTAC Kennedy, to Warrs do 500, to KR-482 do 200, approach runway {runway}")
 
-def waypoint():
-    if location == "IRFD" or "IGAR" or "IMLR" or "ITRC" or "IBLT" or "ICRG" or "Chicago":
-        set_availible_waypoints = "ENDER","SETHR","JAMSI","RESTS","EASTN","PARTS","BEANS","WAREZ","HELPR","CRACK","INTER","DEATH","SAVES","STOOD"
+def pushback(callsign):
+        if gate == "1" or "2" or "3" or "4" or "5" or "6" or "7" and location == "IRFD" or location == "RFD" and runway == "36l" or "36r":
+            text_to_speech(f"ATC: {callsign}, you are clear for push an start at gate {gate}, tail right, advise ready for taxi")
+            print(f"ATC: {callsign} clear for push and start gate {gate}, tail right, advise ready for taxi")
+        if gate == "1" or "2" or "3" or "4" or "5" or "6" or "7" and location == "IRFD" or location == "RFD" and runway == "18l" or "18r":
+            text_to_speech(f"ATC: {callsign}, you are clear for push and start at gate {gate}, tail left, advise ready for taxi")
+            print(f"ATC: {callsign}, clear for push and start at gate {gate}, tail left, advise ready for taxi")
+        if gate == "11" and location == "IRFD" or location == "RFD" and "runway" == "18l" or "18r" or "36l" or "36r":
+            text_to_speech(f"{callsign}, clear for push and start stand 1 1, tail left, advise ready for taxi")
+            print(f"ATC: {callsign}, clear for push and start stand 11, tail left, advise ready for taxi")
+        if gate == "12" and location == "IRFD" or location == "RFD" and "runway" == "18l" or "18r":
+            text_to_speech(f"{callsign}, clear for push and start stand 1 2, tail right, advise ready for taxi")
+            print(f"ATC: {callsign}, clear for push and start stand 12, tail right, advise ready for taxi")
+        if gate == "12" and location == "IRFD" or location == "RFD" and "runway" == "36l" or "36r":
+            text_to_speech(f"{callsign}, clear for push and start stand 1 2, tail left, advise ready for taxi")
+            print(f"ATC: {callsign}, clear for push and start stand 12, tail left, advise ready for taxi")
+        if gate == "8" or "9" or "10" and location == "IRFD" or location == "RFD" and "runway" == "18r" or "18l":
+            text_to_speech(f"{callsign}, clear for push and start gate {gate}, follow Alpha to Alpha 6, tail right, advise ready for taxi")
+            print(f"ATC: {callsign}, clear for push and start gate {gate}, follow A-A6, tail right, advise ready for taxi")
 
+def taxi(callsign):
+        if location == "IRFD" or location == "RFD" and gate == "1" or "2" or "3" or "4" or "5" or "6" or "7" and position == "landing" and runway == "18l":
+            text_to_speech(f"{callsign}, taxi to gate {gate} via, right when able, bravo to alpha three, alpha three to alpha, and alpha to gate {gate}")
+            print(f"ATC: {callsign}, taxi to gate {gate} via, right when able, B-A3, A3-A, A-gate {gate}")
+        if location == "IRFD" or location == "RFD" and gate == "1" or "2" or "3" or "4" or "5" or "6" or "7" and position == "landing" and runway == "18r":
+            text_to_speech(f"{callsign}, taxi to gate {gate} via, Bravo 1 to Bravo, Bravo to Alpha 3, Alpha 3 to alpha, Alpha to gate {gate}")
+            print(f"ATC: {callsign}, taxi to gate {gate} via, B1-B, B-A3, A3-A, A-gate {gate}")
+        if location == "IRFD" or location == "RFD" and gate == "1" or "2" or "3" or "4" or "5" or "6" or "7" and position == "landing" and runway == "36l":
+            text_to_speech(f"{callsign}, taxi to gate {gate} via, Bravo eight to bravo, alpha six, alpha, alpha to gate {gate}")
+            print(f"ATC: {callsign}, taxi to gate {gate} via, B8-B, B-A6, A6-A, A-gate {gate}")
+        if location == "IRFD" or location == "RFD" and gate == "1" or "2" or "3" or "4" or "5" or "6" or "7" and position == "landing" and runway == "36r":
+            text_to_speech(f"{callsign}, taxi to gate {gate} via, Echo 2 to Bravo 9, Bravo 9 to Bravo, Bravo to Alpha 6, Alpha 6 to Alpha, Alpha to gate {gate}")
+            print(f"ATC: {callsign}, taxi to gate {gate} via, E2-B9, B9-B, B-A6, A6-A, A-gate {gate}")
+        if location == "IRFD" or location == "RFD" and gate == "8" or "9" or "10" and position == "landing" and runway == "18l":
+            text_to_speech(f"{callsign}, taxi to gate {gate} via, Charlie to BRavo 3, Bravo 3 to bravo, bravo to alpha 6, alpha 6 to alpha, alpha to gate {gate}")
+            print(f"ATC: {callsign}, taxi to gate {gate} via, C-B3, B3-B, B-A6, A6-A, A-gate {gate}")
+        if location == "IRFD" or location == "RFD" and gate == "8" or "9" or "10" and position == "landing" and runway == "18r":
+            text_to_speech(f"{callsign}, taxi to gate {gate} via, Bravo 1 to bravo, bravo to alpha 6, alpha 6 to alpha, alpha to gate {gate}")
+            print(f"ATC: {callsign}, taxi to gate {gate} via, B1-B, B-A6, A6-A, A-gate {gate}")
+        if location == "IRFD" or location == "RFD" and gate == "8" or "9" or "10" and position == "landing" and runway == "36L":
+            text_to_speech(f"{callsign}, taxi to gate {gate} via, bravo 9 to bravo, bravo to alpha six, alpha 6 to alpha, alpha to gate {gate}")
+            print(f"{callsign}, taxi to gate {gate} via, B9-B, B-A6, A6-A, A-gate {gate}")      
+        if location == "IRFD" or location == "RFD" and gate == "8" or "9" or "10" and position == "landing" and runway == "36r":
+            text_to_speech(f"{callsign}, taxi to gate {gate} via, echo 2 to bravo 9, bravo 9 to bravo, bravo to alpha six, alpha 6 to alpha, alpha to gate {gate}")
+            print(f"{callsign}, taxi to gate {gate} via, E2-B9, B9-B, B-A6, A6-A, A-gate {gate}") 
+        if location == "IRFD" or location == "RFD" and gate == "11" and position == "landing" and runway == "18l":
+            text_to_speech(f"{callsign} taxi to stand 1 1 via, Charlie to Bravo 3, Bravo 3 to Bravo, Bravo to Alpha 6, Alpha 6 to Alpha, Alpha to stand 1 1")
+            print(f"ATC: {callsign}, taxi to stand 11 via, C-B3, B3-B, B-A6, A6-A, A-stand 11")
+        if location == "IRFD" or location == "RFD" and gate == "12" and position == "landing" and runway == "18l":
+            text_to_speech(f"{callsign} taxi to stand 1 2 via, Charlie to Bravo 3, Bravo 3 to Bravo, Bravo to Alpha 6, Alpha 6 to Alpha, Alpha to stand 1 2")
+            print(f"ATC: {callsign}, taxi to stand 12 via, C-B3, B3-B, B-A6, A6-A, A-stand 12")
 
+        if location == "IRFD" or location == "RFD" and gate == "1" or "2" or "3" or "4" or "5" or "6" or "7" or "8" or "9" or "10" or "11" or "12" and position == "takeoff" and runway == "18l":
+            text_to_speech(f"{callsign}, taxi to runway 1 8 left via, gate {gate} to alpha, alpha to alpha 6, alpha 6 to bravo, bravo to bravo 9, bravo 9 to echo 2, hold short of 1 8 left")
+            print(f"ATC: {callsign}, taxi to runway 18L via, gate {gate}-A, A-A6, A6-B, B-B9, B9-E2, hold short of 18L")
+        if location == "IRFD" or location == "RFD" and gate == "1" or "2" or "3" or "4" or "5" or "6" or "7" or "8" or "9" or "10" or "11" or "12" and position == "takeoff" and runway == "18r":
+            text_to_speech(f"{callsign}, taxi to runway 1 8 Right via, gate {gate}-A, A-A6, A6-B, B-B9, hold short of 1 8 Right")
+            print(f"ATC: {callsign}, taxi to runway 18R via, gate {gate} to Alpha, Alpha to Alpha 6, Alpha 6 to Bravo, Bravo to Bravo 9, hold short of 18R")
+        if location == "IRFD" or location == "RFD" and gate == "1" or "2" or "3" or "4" or "5" or "6" or "7" or "8" or "9" or "10" or "11" or "12" and position == "takeoff" and runway == "36l":
+            text_to_speech(f"{callsign}, taxi to runway 36L via, alpha to alpha 3, alpha 3 to bravo, bravo to bravo 1, hold short of runway 3 6 left")
+            print(f"ATC: {callsign}, taxi to runway 36L via, A-A3, A3-B, B-B1, hold short runway 36L")
+        if location == "IRFD" or location == "RFD" and gate == "1" or "2" or "3" or "4" or "5" or "6" or "7" or "8" or "9" or "10" or "11" or "12" and position == "takeoff" and runway == "36r":
+            text_to_speech(f"{callsign}, taxi to runway 36L via, alpha to alpha 3, alpha 3 to bravo, bravo to bravo 3, bravo 3 to charlie, hold short of runway 3 6 right")
+            print(f"ATC: {callsign}, taxi to runway 36R via, A-A3, A3-B, B-B3, B3-C, hold short runway 36R")
 
-def takeoff(user_input, callsign):
-    if runway == "36l" and location == "IRFD":
+def splitRunway(reqRunway):
+    retString = ""
+    # reqRunway = 18L
+    # retString = 1 8 Left
+    for element in reqRunway:
+            if element.lower()=="l":
+                retString = retString + "Left "
+            elif element.lower()=="r":
+                retString = retString + "Right "
+            else:
+                retString = retString + element + " "
 
-def landing(user_input, callsign):
-    if runway == "36l" and location == "IRFD":
+    return retString
 
-def pushback(user_input, callsign):
-        if gate == "1" or "2" or "3" or "4" or "5" and location == "IRFD" and runway == "36l" or "18l":
-            text_to_speech(f"ATC: {callsign}, you are clear for push an start at {gate}, tail right")
-            print(f"ATC: {callsign} clear for push and start {gate}, tail right")
-
-def taxi(user_input, callsign):
-        if location == "IRFD" and gate == "1" and position == "takeoff":
-            # If taking off at IRFD, provide taxi instructions to the runway
-                text_to_speech("Taxi to runway 36 left via Gate one to Alpha three, Alpha three to Bravo, Bravo to Bravo one, Bravo one to Runway 36 left")
-                print(f"ATC: {callsign}, Taxi to runway 36L, via Gate 1 to A3, A3 to B, B to B1, B1 to Runway 36L")
-        elif location == "IRFD" and gate == "1" and position == "landing":
-                text_to_speech("Taxi to gate one, right when able, cross 36 left to bravo, bravo to alpha 3, alpha 3 to gate 1")
-                print(f"ATC: {callsign}, Taxi to gate 1, right when able, cross 36L to B, B to A3, A3 to gate 1")
-        elif location == "IRFD" and gate == "2":
-       
-# Main loop to interact with the ATC
 while True:
     user_input = input("Me: ")
 
     # Break the loop if the user says "bye"
-    if user_input.lower() == "bye" or "exit" or "g'day" or "good day":
+    if user_input.lower() == "bye":
+        text_to_speech(f"ATC: Goodnight, safe flight")
         print(f"ATC: Goodnight have a safe flight.")
         break
 
     # Get the ATC's response based on the user input and callsign
     response = process_input(user_input, aircraft_callsign)
-    print(response)
-
-    text_to_speech(response)
-
-# Extras
-island = get_island()   
+    if response != "": 
+        text_to_speech(response)  
+        print(response)
